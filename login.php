@@ -185,7 +185,17 @@ $errorMsg = match($error) {
 <div class="login-page">
 <div class="login-box">
 
-  <!-- ── LEFT: Auth Form ── -->
+  <!-- ── LEFT: Branding Panel ── -->
+  <div class="login-brand-panel">
+    <img src="/logo1.png" alt="Cassey Fuel Station Logo" class="logo-img">
+    <div class="brand-tagline"></div>
+    <div class="brand-sub"></div>
+    <div class="login-brand-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: Auth Form ── -->
   <div class="login-form-panel">
     <div class="login-card anim-fade">
 
@@ -229,16 +239,6 @@ $errorMsg = match($error) {
       <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-muted)">
         Cassey Fuel Station v1.0 &middot; Powered by Supabase
       </div>
-    </div>
-  </div>
-
-  <!-- ── RIGHT: Branding Panel ── -->
-  <div class="login-brand-panel">
-    <img src="/logo1.png" alt="Cassey Fuel Station Logo" class="logo-img">
-    <div class="brand-tagline"></div>
-    <div class="brand-sub"></div>
-    <div class="login-brand-dots">
-      <span></span><span></span><span></span>
     </div>
   </div>
 
