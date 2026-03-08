@@ -5,7 +5,8 @@ session_start();
 
 // Redirect if already logged in
 if (!empty($_SESSION['profile'])) {
-    header('Location: /dashboard.php');
+  $role = $_SESSION['profile']['role'] ?? 'cashier';
+  header('Location: ' . ($role === 'cashier' ? '/pos.php' : '/dashboard.php'));
     exit;
 }
 

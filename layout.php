@@ -7,13 +7,14 @@ $role     = $profile['role'] ?? 'cashier';
 $userName = $profile['full_name'] ?? 'User';
 $roleLabel = ucfirst($role);
 $initial  = strtoupper(substr($userName, 0, 1));
+$homePage = $role === 'cashier' ? 'pos.php' : 'dashboard.php';
 
 // Nav items per role
 $nav = [
   [
     'section' => 'Main',
     'items'   => [
-      ['page' => 'dashboard.php', 'label' => 'Dashboard',   'icon' => '📊', 'roles' => ['admin','staff','cashier']],
+      ['page' => 'dashboard.php', 'label' => 'Dashboard',   'icon' => '📊', 'roles' => ['admin','staff']],
       ['page' => 'pos.php',       'label' => 'POS',          'icon' => '🖥️', 'roles' => ['admin','cashier']],
     ],
   ],
@@ -111,7 +112,7 @@ $nav = [
 <div id="app">
   <!-- ── Sidebar ── -->
   <nav class="sidebar" id="sidebar">
-    <a class="sidebar-brand" href="/dashboard.php">
+    <a class="sidebar-brand" href="/<?= $homePage ?>">
       <img src="/logo1.png" alt="Logo" style="width:32px;height:32px;object-fit:cover;border-radius:50%;flex-shrink:0;">
       <div class="brand-name"><?= htmlspecialchars($bizName) ?><small>Gas &amp; Fuel POS</small></div>
     </a>

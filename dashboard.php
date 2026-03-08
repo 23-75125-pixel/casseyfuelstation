@@ -5,6 +5,13 @@ require_once __DIR__ . '/supabase.php';
 
 $mw      = new Middleware();
 $profile = $mw->requireSession();
+$role    = $profile['role'] ?? 'cashier';
+
+if ($role === 'cashier') {
+  header('Location: /pos.php?error=forbidden');
+  exit;
+}
+
 $sb      = new Supabase();
 $settings = getSettings($sb);
 
