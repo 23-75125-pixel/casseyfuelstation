@@ -634,7 +634,7 @@ const POS = {
         .row{display:flex;justify-content:space-between}
         .center{text-align:center}
         hr{border:none;border-top:1px dashed #000;margin:6px 0}
-        @media print{@page{margin:0;size:80mm auto}}
+        @media print{@page{margin:0;size:58mm auto}}
       </style></head>
       <body>${content}</body></html>
     `);

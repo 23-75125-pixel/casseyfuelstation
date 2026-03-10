@@ -58,10 +58,8 @@ include __DIR__ . '/layout.php';
       </div>
       <div>
         <label class="form-label">Thermal Width</label>
-        <select class="form-select" id="s-thermal_width">
-          <option value="58" <?= ($settings['thermal_width'] ?? '80') === '58' ? 'selected' : '' ?>>58mm</option>
-          <option value="80" <?= ($settings['thermal_width'] ?? '80') === '80' ? 'selected' : '' ?>>80mm</option>
-        </select>
+        <input type="hidden" id="s-thermal_width" value="58">
+        <input type="text" class="form-control" value="58mm" readonly>
       </div>
     </div>
   </div>
