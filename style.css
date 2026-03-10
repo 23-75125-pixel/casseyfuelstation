@@ -962,7 +962,7 @@ table.table tbody tr:last-child td { border-bottom: none; }
 }
 
 .receipt-preview {
-  font-size: 14px;
+  font-size: 16px;
   background: #fff;
   padding: 16px;
   width: 100%;
@@ -980,14 +980,14 @@ table.table tbody tr:last-child td { border-bottom: none; }
 .receipt-preview hr {
   border: none;
   border-top: 1px dashed #aaa;
-  margin: 8px 0;
+  margin: 11px 0;
 }
 
 .receipt-preview .row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 11px;
 }
 /* ============================================================
    RESPONSIVE BREAKPOINTS  (Bootstrap 5 aligned)
