@@ -394,7 +394,7 @@ INSERT INTO settings (key, value, description) VALUES
   ('tax_enabled', 'false', 'Enable tax computation'),
   ('tax_rate', '0.12', 'Tax rate (12%)'),
   ('require_shift', 'true', 'Require open shift for sales'),
-  ('thermal_width', '58', 'Thermal printer width mm (58 or 80)'),
+  ('thermal_width', '80', 'Thermal printer width mm (58 or 80)'),
   ('currency_symbol', '₱', 'Currency symbol'),
   ('allow_cashier_discount', 'false', 'Allow cashier to apply discounts');
 

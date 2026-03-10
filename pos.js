@@ -626,17 +626,20 @@ const POS = {
   printReceipt() {
     const content = document.getElementById('receipt-content')?.innerHTML;
     if (!content) return;
+    const thermalWidth = parseInt(this.settings.thermal_width || '58', 10) === 80 ? '80mm' : '58mm';
+    const baseFontSize = thermalWidth === '80mm' ? 14 : 13;
     const win = window.open('', '_blank', 'width=400,height=600');
     win.document.write(`
       <html><head><title>Receipt</title>
       <style>
-        body{font-family:'Courier New',monospace;font-size:12px;padding:8px;width:280px}
-        .row{display:flex;justify-content:space-between}
+        body{margin:0;padding:8px;width:${thermalWidth};font-family:'Courier New',monospace}
+        .receipt-print,.receipt-print *{font-family:'Courier New',monospace;font-size:${baseFontSize}px !important;font-weight:700;line-height:1.35}
+        .row{display:flex;justify-content:space-between;gap:8px}
         .center{text-align:center}
         hr{border:none;border-top:1px dashed #000;margin:6px 0}
-        @media print{@page{margin:0;size:58mm auto}}
+        @media print{@page{margin:0;size:${thermalWidth} auto}body{padding:4px}}
       </style></head>
-      <body>${content}</body></html>
+      <body><div class="receipt-print">${content}</div></body></html>
     `);
     win.document.close();
     setTimeout(() => { win.print(); win.close(); }, 500);
