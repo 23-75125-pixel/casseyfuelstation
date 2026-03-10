@@ -954,23 +954,41 @@ table.table tbody tr:last-child td { border-bottom: none; }
 .pay-method-chip.charge.active { background: var(--warning); border-color: var(--warning); }
 
 /* ── Receipt preview ────────────────────── */
+.receipt-preview,
+.receipt-preview * {
+  font-family: 'DM Mono', monospace !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+}
+
 .receipt-preview {
-  font-family: 'DM Mono', monospace;
   font-size: 14px;
-  font-weight: bold;
-  background: white;
+  background: #fff;
   padding: 16px;
+  width: 100%;
   max-width: 300px;
   margin: 0 auto;
   line-height: 1.6;
   border: 1px solid var(--border);
   border-radius: 4px;
 }
-.receipt-preview * { font-weight: bold; }
-.receipt-preview .center { text-align: center; }
-.receipt-preview hr { border: none; border-top: 1px dashed #aaa; margin: 8px 0; }
-.receipt-preview .row { display: flex; justify-content: space-between; }
 
+.receipt-preview .center {
+  text-align: center;
+}
+
+.receipt-preview hr {
+  border: none;
+  border-top: 1px dashed #aaa;
+  margin: 8px 0;
+}
+
+.receipt-preview .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
 /* ============================================================
    RESPONSIVE BREAKPOINTS  (Bootstrap 5 aligned)
    xxl ≥ 1400 / xl ≥ 1200 / lg ≥ 992 / md ≥ 768 / sm ≥ 576
