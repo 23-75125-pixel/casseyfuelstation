@@ -956,7 +956,8 @@ table.table tbody tr:last-child td { border-bottom: none; }
 /* ── Receipt preview ────────────────────── */
 .receipt-preview {
   font-family: 'DM Mono', monospace;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: bold;
   background: white;
   padding: 16px;
   max-width: 300px;
@@ -965,6 +966,7 @@ table.table tbody tr:last-child td { border-bottom: none; }
   border: 1px solid var(--border);
   border-radius: 4px;
 }
+.receipt-preview * { font-weight: bold; }
 .receipt-preview .center { text-align: center; }
 .receipt-preview hr { border: none; border-top: 1px dashed #aaa; margin: 8px 0; }
 .receipt-preview .row { display: flex; justify-content: space-between; }
