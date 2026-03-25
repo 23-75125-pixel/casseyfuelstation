@@ -55,10 +55,18 @@ function getScopedCategories(categories) {
   return categories.filter(c => isAllowedCategory(c.name));
 }
 
-function getScopedProducts(products) {
+function getScopedProducts(products, categories = []) {
   const allowedCategoryNames = getAllowedCategoryNames();
   if (!allowedCategoryNames.length) return products;
-  return products.filter(p => isAllowedCategory(p.category?.name));
+  const allowedCategoryIds = new Set(
+    categories
+      .filter(c => allowedCategoryNames.includes(c.name))
+      .map(c => c.id)
+  );
+  return products.filter(p =>
+    isAllowedCategory(p.category?.name) ||
+    (p.category_id && allowedCategoryIds.has(p.category_id))
+  );
 }
 
 async function loadData() {
@@ -68,8 +76,8 @@ async function loadData() {
       App.get('/api_products.php?action=list', { active: 'all' }),
       App.get('/api_products.php?action=categories'),
     ]);
-    allProducts   = getScopedProducts(Array.isArray(pData.products) ? pData.products : []);
     allCategories = getScopedCategories(Array.isArray(cData.categories) ? cData.categories : []);
+    allProducts   = getScopedProducts(Array.isArray(pData.products) ? pData.products : [], allCategories);
 
     // Build id-keyed map so onclick can pass just the id
     productsMap = {};
