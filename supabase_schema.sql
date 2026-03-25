@@ -398,13 +398,16 @@ INSERT INTO settings (key, value, description) VALUES
   ('currency_symbol', '₱', 'Currency symbol'),
   ('allow_cashier_discount', 'false', 'Allow cashier to apply discounts');
 
--- Default categories
-INSERT INTO categories (name) VALUES
-  ('Engine Oil'),
-  ('Gear Oil'),
-  ('ATF/Fluids'),
-  ('LPG Tanks'),
-  ('LPG Accessories');
+-- Default categories for separated inventory modules:
+-- Fuel inventory uses fuel_types + fuel_tanks
+-- Oil inventory uses products under oil-related categories
+-- Gas inventory uses products under LPG-related categories
+INSERT INTO categories (name, description) VALUES
+  ('Engine Oil', 'Oil inventory: engine oil products'),
+  ('Gear Oil', 'Oil inventory: gear oil products'),
+  ('ATF/Fluids', 'Oil inventory: ATF, brake fluid, coolant, and similar fluids'),
+  ('LPG Tanks', 'Gas inventory: filled LPG tanks and empty tank deposits'),
+  ('LPG Accessories', 'Gas inventory: regulators, hoses, clamps, seals, and accessories');
 
 -- Default suppliers
 INSERT INTO suppliers (name, contact_person, phone, address) VALUES
@@ -478,6 +481,12 @@ INSERT INTO products (sku, barcode, name, category_id, unit, cost, price, stock_
 SELECT 'LPG-A03', NULL, 'LPG Hose Clamp Set', id, 'set', 25, 45, 40, 10 FROM categories WHERE name='LPG Accessories';
 INSERT INTO products (sku, barcode, name, category_id, unit, cost, price, stock_qty, low_stock_level)
 SELECT 'LPG-A04', NULL, 'LPG Safety Seal', id, 'pcs', 8, 15, 100, 20 FROM categories WHERE name='LPG Accessories';
+INSERT INTO products (sku, barcode, name, category_id, unit, cost, price, stock_qty, low_stock_level)
+SELECT 'LPG-A05', NULL, 'LPG Regulator with Hose Set', id, 'set', 240, 350, 15, 5 FROM categories WHERE name='LPG Accessories';
+INSERT INTO products (sku, barcode, name, category_id, unit, cost, price, stock_qty, low_stock_level)
+SELECT 'LPG-A06', NULL, 'Gas Stove Burner Head', id, 'pcs', 95, 150, 18, 5 FROM categories WHERE name='LPG Accessories';
+INSERT INTO products (sku, barcode, name, category_id, unit, cost, price, stock_qty, low_stock_level)
+SELECT 'LPG-A07', NULL, 'LPG Hose Clip Pair', id, 'pack', 12, 25, 50, 10 FROM categories WHERE name='LPG Accessories';
 
 -- ============================================================
 -- FORCE PostgREST to reload schema cache

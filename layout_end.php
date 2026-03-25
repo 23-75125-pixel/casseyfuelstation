@@ -10,13 +10,13 @@
 <!-- Supabase JS (for Realtime) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/app.js"></script>
+<?php if (!empty($inlineScript)): ?>
+<script><?= $inlineScript ?></script>
+<?php endif; ?>
 <?php if (!empty($extraScripts)): ?>
   <?php foreach ($extraScripts as $script): ?>
     <script src="<?= $script ?>"></script>
   <?php endforeach; ?>
-<?php endif; ?>
-<?php if (!empty($inlineScript)): ?>
-<script><?= $inlineScript ?></script>
 <?php endif; ?>
 <script>
   // Live clock in topbar

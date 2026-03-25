@@ -15,8 +15,15 @@ $inlineScript = 'window.__canDelete = ' . json_encode(in_array($profile['role'],
   . 'window.INVENTORY_CONFIG = ' . json_encode([
       'allowedCategoryNames' => ['LPG Tanks', 'LPG Accessories'],
       'productLabel' => 'Gas Tank Product',
+      'nameLabel' => 'Gas Product Name',
       'namePlaceholder' => 'e.g. Regasco 11kg LPG Tank - Filled',
       'skuPlaceholder' => 'LPG-001',
+      'skuPrefix' => 'LPG',
+      'barcodePlaceholder' => 'Optional gas tank barcode',
+      'categoryPlaceholder' => '— Select Gas Category —',
+      'filterCategoryLabel' => 'All Gas Categories',
+      'allowedUnits' => ['tank', 'set', 'pack', 'pcs', 'kg'],
+      'defaultUnit' => 'tank',
     ]) . ';';
 include __DIR__ . '/layout.php';
 ?>

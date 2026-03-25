@@ -15,8 +15,15 @@ $inlineScript = 'window.__canDelete = ' . json_encode(in_array($profile['role'],
   . 'window.INVENTORY_CONFIG = ' . json_encode([
       'allowedCategoryNames' => ['Engine Oil', 'Gear Oil', 'ATF/Fluids'],
       'productLabel' => 'Oil Product',
+      'nameLabel' => 'Oil Product Name',
       'namePlaceholder' => 'e.g. Shell Advance 4T 10W-40 1L',
       'skuPlaceholder' => 'OIL-001',
+      'skuPrefix' => 'OIL',
+      'barcodePlaceholder' => 'Optional oil product barcode',
+      'categoryPlaceholder' => '— Select Oil Category —',
+      'filterCategoryLabel' => 'All Oil Categories',
+      'allowedUnits' => ['bottle', 'liter', 'gallon', 'can', 'pcs'],
+      'defaultUnit' => 'bottle',
     ]) . ';';
 include __DIR__ . '/layout.php';
 ?>

@@ -5,8 +5,6 @@
 
 let allProducts = [];
 let allCategories = [];
-const inventoryCfg = window.INVENTORY_CONFIG || {};
-const allowedCategoryNames = Array.isArray(inventoryCfg.allowedCategoryNames) ? inventoryCfg.allowedCategoryNames : [];
 let productsMap = {}; // id → product, for safe onclick lookup
 
 // HTML-attribute-safe escaper
@@ -14,7 +12,39 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function getInventoryCfg() {
+  return window.INVENTORY_CONFIG || {};
+}
+
+function getAllowedCategoryNames() {
+  const cfg = getInventoryCfg();
+  return Array.isArray(cfg.allowedCategoryNames) ? cfg.allowedCategoryNames : [];
+}
+
+function getAllowedUnits() {
+  const cfg = getInventoryCfg();
+  return Array.isArray(cfg.allowedUnits) && cfg.allowedUnits.length
+    ? cfg.allowedUnits
+    : ['bottle', 'pcs', 'liter', 'gallon', 'can', 'tank', 'set', 'pack', 'kg'];
+}
+
+function getUnitLabel(unit) {
+  const labels = {
+    bottle: 'Bottle',
+    pcs: 'Pcs',
+    liter: 'Liter',
+    gallon: 'Gallon',
+    can: 'Can',
+    tank: 'Tank',
+    set: 'Set',
+    pack: 'Pack',
+    kg: 'Kg',
+  };
+  return labels[unit] || unit;
+}
+
 function isAllowedCategory(categoryName) {
+  const allowedCategoryNames = getAllowedCategoryNames();
   if (!allowedCategoryNames.length) return true;
   return allowedCategoryNames.includes(categoryName || '');
 }
@@ -31,6 +61,7 @@ function getScopedProducts(products) {
 
 async function loadData() {
   try {
+    const cfg = getInventoryCfg();
     const [pData, cData] = await Promise.all([
       App.get('/api_products.php?action=list', { active: 'all' }),
       App.get('/api_products.php?action=categories'),
@@ -45,7 +76,7 @@ async function loadData() {
     // Populate category filter (preserve selection)
     const catSel = document.getElementById('cat-filter');
     const prevCat = catSel.value;
-    catSel.innerHTML = '<option value="">All Categories</option>';
+    catSel.innerHTML = `<option value="">${esc(cfg.filterCategoryLabel || 'All Categories')}</option>`;
     allCategories.forEach(c => {
       const o = document.createElement('option');
       o.value = c.id; o.textContent = c.name;
@@ -144,27 +175,31 @@ function openProductModal(productOrId) {
     product = productOrId;
   }
   const isEdit = product !== null;
+  const cfg = getInventoryCfg();
+  const allowedUnits = getAllowedUnits();
+  const unitValue = product?.unit || cfg.defaultUnit || allowedUnits[0] || 'pcs';
+  const defaultCategoryId = allCategories[0]?.id || '';
   App.modal.open(`
     <div class="modal-header">
-      <h5 class="modal-title">${isEdit ? 'Edit' : 'Add'} ${esc(inventoryCfg.productLabel || 'Product')}</h5>
+      <h5 class="modal-title">${isEdit ? 'Edit' : 'Add'} ${esc(cfg.productLabel || 'Product')}</h5>
       <button class="modal-close" onclick="App.modal.close()">✕</button>
     </div>
     <div class="modal-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div style="grid-column:1/-1">
-        <label class="form-label">Product Name *</label>
-        <input type="text" class="form-control" id="p-name" value="${esc(product?.name)}" placeholder="${esc(inventoryCfg.namePlaceholder || 'e.g. Shell Advance 4T 10W-40 1L')}">
+        <label class="form-label">${esc(cfg.nameLabel || 'Product Name')} *</label>
+        <input type="text" class="form-control" id="p-name" value="${esc(product?.name)}" placeholder="${esc(cfg.namePlaceholder || 'e.g. Shell Advance 4T 10W-40 1L')}">
       </div>
       <div>
         <label class="form-label">SKU</label>
         <div style="display:flex;gap:6px">
-          <input type="text" class="form-control" id="p-sku" value="${esc(product?.sku)}" placeholder="${esc(inventoryCfg.skuPlaceholder || 'PRD-001')}" style="flex:1">
+          <input type="text" class="form-control" id="p-sku" value="${esc(product?.sku)}" placeholder="${esc(cfg.skuPlaceholder || 'PRD-001')}" style="flex:1">
           <button type="button" class="btn btn-sm btn-outline" onclick="generateRandomSku()" title="Generate random SKU" style="white-space:nowrap;font-size:11px">🎲 Gen</button>
         </div>
       </div>
       <div>
         <label class="form-label">Barcode</label>
         <div style="display:flex;gap:6px">
-          <input type="text" class="form-control" id="p-barcode" value="${esc(product?.barcode)}" placeholder="Optional" style="flex:1">
+          <input type="text" class="form-control" id="p-barcode" value="${esc(product?.barcode)}" placeholder="${esc(cfg.barcodePlaceholder || 'Optional')}" style="flex:1">
           <button type="button" class="btn btn-sm btn-outline" onclick="generateRandomBarcode()" title="Generate random barcode" style="white-space:nowrap;font-size:11px">🎲 Gen</button>
         </div>
       </div>
@@ -172,7 +207,7 @@ function openProductModal(productOrId) {
         <label class="form-label">Category</label>
         <select class="form-select" id="p-category">
           <option value="">— Select —</option>
-          ${allCategories.map(c => `<option value="${c.id}" ${product?.category_id === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}
+          ${allCategories.map(c => `<option value="${c.id}" ${(product?.category_id || defaultCategoryId) === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}
         </select>
       </div>
       <div>
@@ -216,16 +251,30 @@ function openProductModal(productOrId) {
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="App.modal.close()">Cancel</button>
       <button class="btn btn-primary" id="save-product-btn" onclick="saveProduct(${isEdit ? `'${product.id}'` : 'null'})">
-        ${isEdit ? 'Save Changes' : 'Add Product'}
+        ${isEdit ? 'Save Changes' : `Add ${esc(cfg.productLabel || 'Product')}`}
       </button>
     </div>
   `, 'md');
+
+  const categorySelect = document.getElementById('p-category');
+  if (categorySelect && categorySelect.options.length) {
+    categorySelect.options[0].textContent = cfg.categoryPlaceholder || 'Select Category';
+    if (!product && defaultCategoryId) categorySelect.value = defaultCategoryId;
+  }
+
+  const unitSelect = document.getElementById('p-unit');
+  if (unitSelect) {
+    unitSelect.innerHTML = allowedUnits
+      .map(unit => `<option value="${unit}" ${unitValue === unit ? 'selected' : ''}>${getUnitLabel(unit)}</option>`)
+      .join('');
+  }
 }
 
-// Generate random SKU (e.g. PRD-A3F7K2)
+// Generate random SKU using the current inventory prefix
 function generateRandomSku() {
+  const cfg = getInventoryCfg();
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = 'PRD-';
+  let code = (cfg.skuPrefix || 'PRD') + '-';
   for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   document.getElementById('p-sku').value = code;
 }
@@ -283,7 +332,7 @@ async function saveProduct(id) {
     sku:             skuVal,
     barcode:         barcodeVal,
     category_id:     document.getElementById('p-category').value || allCategories[0]?.id || null,
-    unit:            document.getElementById('p-unit').value || 'bottle',
+    unit:            document.getElementById('p-unit').value || getInventoryCfg().defaultUnit || 'bottle',
     price,
     cost:            parseFloat(document.getElementById('p-cost').value) || 0,
     stock_qty:       parseFloat(document.getElementById('p-stock').value) || 0,
