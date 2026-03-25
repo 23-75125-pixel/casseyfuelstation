@@ -1,0 +1,18 @@
+Options -Indexes
+RewriteEngine On
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Protect sensitive files
+<FilesMatch "^(\.env|\.env\.example|config\.php|composer\.json|composer\.lock)$">
+    Require all denied
+</FilesMatch>
+
+# Redirect root to index.php
+RewriteRule ^$ index.php [L]
