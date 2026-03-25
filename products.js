@@ -5,11 +5,28 @@
 
 let allProducts = [];
 let allCategories = [];
+const inventoryCfg = window.INVENTORY_CONFIG || {};
+const allowedCategoryNames = Array.isArray(inventoryCfg.allowedCategoryNames) ? inventoryCfg.allowedCategoryNames : [];
 let productsMap = {}; // id → product, for safe onclick lookup
 
 // HTML-attribute-safe escaper
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function isAllowedCategory(categoryName) {
+  if (!allowedCategoryNames.length) return true;
+  return allowedCategoryNames.includes(categoryName || '');
+}
+
+function getScopedCategories(categories) {
+  if (!allowedCategoryNames.length) return categories;
+  return categories.filter(c => isAllowedCategory(c.name));
+}
+
+function getScopedProducts(products) {
+  if (!allowedCategoryNames.length) return products;
+  return products.filter(p => isAllowedCategory(p.category?.name));
 }
 
 async function loadData() {
@@ -18,8 +35,8 @@ async function loadData() {
       App.get('/api_products.php?action=list', { active: 'all' }),
       App.get('/api_products.php?action=categories'),
     ]);
-    allProducts   = Array.isArray(pData.products)   ? pData.products   : [];
-    allCategories = Array.isArray(cData.categories) ? cData.categories : [];
+    allProducts   = getScopedProducts(Array.isArray(pData.products) ? pData.products : []);
+    allCategories = getScopedCategories(Array.isArray(cData.categories) ? cData.categories : []);
 
     // Build id-keyed map so onclick can pass just the id
     productsMap = {};
@@ -129,18 +146,18 @@ function openProductModal(productOrId) {
   const isEdit = product !== null;
   App.modal.open(`
     <div class="modal-header">
-      <h5 class="modal-title">${isEdit ? 'Edit' : 'Add'} Product</h5>
+      <h5 class="modal-title">${isEdit ? 'Edit' : 'Add'} ${esc(inventoryCfg.productLabel || 'Product')}</h5>
       <button class="modal-close" onclick="App.modal.close()">✕</button>
     </div>
     <div class="modal-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div style="grid-column:1/-1">
         <label class="form-label">Product Name *</label>
-        <input type="text" class="form-control" id="p-name" value="${esc(product?.name)}" placeholder="e.g. Shell Advance 4T 10W-40 1L">
+        <input type="text" class="form-control" id="p-name" value="${esc(product?.name)}" placeholder="${esc(inventoryCfg.namePlaceholder || 'e.g. Shell Advance 4T 10W-40 1L')}">
       </div>
       <div>
         <label class="form-label">SKU</label>
         <div style="display:flex;gap:6px">
-          <input type="text" class="form-control" id="p-sku" value="${esc(product?.sku)}" placeholder="EO-001" style="flex:1">
+          <input type="text" class="form-control" id="p-sku" value="${esc(product?.sku)}" placeholder="${esc(inventoryCfg.skuPlaceholder || 'PRD-001')}" style="flex:1">
           <button type="button" class="btn btn-sm btn-outline" onclick="generateRandomSku()" title="Generate random SKU" style="white-space:nowrap;font-size:11px">🎲 Gen</button>
         </div>
       </div>
@@ -265,7 +282,7 @@ async function saveProduct(id) {
     name,
     sku:             skuVal,
     barcode:         barcodeVal,
-    category_id:     document.getElementById('p-category').value || null,
+    category_id:     document.getElementById('p-category').value || allCategories[0]?.id || null,
     unit:            document.getElementById('p-unit').value || 'bottle',
     price,
     cost:            parseFloat(document.getElementById('p-cost').value) || 0,

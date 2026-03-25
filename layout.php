@@ -3,28 +3,31 @@
 // Usage: include after session + auth check
 // $pageTitle, $activePage, $profile must be set
 
-$role     = $profile['role'] ?? 'cashier';
-$userName = $profile['full_name'] ?? 'User';
+$role      = $profile['role'] ?? 'cashier';
+$userName  = $profile['full_name'] ?? 'User';
 $roleLabel = ucfirst($role);
-$initial  = strtoupper(substr($userName, 0, 1));
-$homePage = $role === 'cashier' ? 'pos.php' : 'dashboard.php';
+$initial   = strtoupper(substr($userName, 0, 1));
+$homePage  = $role === 'cashier' ? 'pos.php' : 'dashboard.php';
 
 // Nav items per role
 $nav = [
   [
     'section' => 'Main',
     'items'   => [
-      ['page' => 'dashboard.php', 'label' => 'Dashboard',   'icon' => '📊', 'roles' => ['admin','staff']],
-      ['page' => 'pos.php',       'label' => 'POS',          'icon' => '🖥️', 'roles' => ['admin','cashier']],
+      ['page' => 'dashboard.php', 'label' => 'Dashboard', 'icon' => '📊', 'roles' => ['admin','staff']],
+      ['page' => 'pos.php', 'label' => 'POS', 'icon' => '🖥️', 'roles' => ['admin','cashier']],
     ],
   ],
   [
     'section' => 'Inventory',
     'items'   => [
-      ['page' => 'products.php',    'label' => 'Oil Products',    'icon' => '🛢️', 'roles' => ['admin','staff']],
-      ['page' => 'receiving.php',   'label' => 'Receiving',   'icon' => '📥', 'roles' => ['admin','staff']],
-      ['page' => 'adjustments.php', 'label' => 'Adjustments', 'icon' => '⚖️', 'roles' => ['admin','staff']],
-      ['page' => 'suppliers.php',   'label' => 'Suppliers',   'icon' => '🏭', 'roles' => ['admin','staff']],
+      ['page' => 'oil_products.php', 'label' => 'Oil Products', 'icon' => '🛢️', 'roles' => ['admin','staff']],
+      ['page' => 'oil_receiving.php', 'label' => 'Oil Receiving', 'icon' => '📥', 'roles' => ['admin','staff']],
+      ['page' => 'oil_adjustments.php', 'label' => 'Oil Adjustments', 'icon' => '⚖️', 'roles' => ['admin','staff']],
+      ['page' => 'gas_products.php', 'label' => 'Gas Tank Products', 'icon' => '🧯', 'roles' => ['admin','staff']],
+      ['page' => 'gas_receiving.php', 'label' => 'Gas Receiving', 'icon' => '📦', 'roles' => ['admin','staff']],
+      ['page' => 'gas_adjustments.php', 'label' => 'Gas Adjustments', 'icon' => '🔧', 'roles' => ['admin','staff']],
+      ['page' => 'suppliers.php', 'label' => 'Suppliers', 'icon' => '🏭', 'roles' => ['admin','staff']],
     ],
   ],
   [
@@ -37,16 +40,16 @@ $nav = [
     'section' => 'Sales',
     'items'   => [
       ['page' => 'transactions.php', 'label' => 'Transactions', 'icon' => '🧾', 'roles' => ['admin','staff','cashier']],
-      ['page' => 'shifts.php',       'label' => 'Shifts',        'icon' => '🕐', 'roles' => ['admin','staff','cashier']],
-      ['page' => 'reports.php',      'label' => 'Reports',       'icon' => '📈', 'roles' => ['admin','staff']],
+      ['page' => 'shifts.php', 'label' => 'Shifts', 'icon' => '🕐', 'roles' => ['admin','staff','cashier']],
+      ['page' => 'reports.php', 'label' => 'Reports', 'icon' => '📈', 'roles' => ['admin','staff']],
     ],
   ],
   [
     'section' => 'Admin',
     'items'   => [
-      ['page' => 'users.php',     'label' => 'Users',      'icon' => '👥', 'roles' => ['admin']],
-      ['page' => 'audit.php',     'label' => 'Audit Log',  'icon' => '🔍', 'roles' => ['admin']],
-      ['page' => 'settings.php',  'label' => 'Settings',   'icon' => '⚙️', 'roles' => ['admin']],
+      ['page' => 'users.php', 'label' => 'Users', 'icon' => '👥', 'roles' => ['admin']],
+      ['page' => 'audit.php', 'label' => 'Audit Log', 'icon' => '🔍', 'roles' => ['admin']],
+      ['page' => 'settings.php', 'label' => 'Settings', 'icon' => '⚙️', 'roles' => ['admin']],
     ],
   ],
 ];
@@ -66,15 +69,10 @@ $nav = [
   <meta name="biz-name" content="<?= htmlspecialchars($bizName) ?>">
   <meta name="biz-addr" content="<?= htmlspecialchars($bizAddr) ?>">
   <meta name="biz-tin"  content="<?= htmlspecialchars($bizTin) ?>">
-  <!-- Bootstrap 5.3 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <!-- SweetAlert2 -->
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-  <!-- App styles -->
   <link rel="stylesheet" href="/style.css">
-  <!-- Supabase public config for JS realtime -->
   <meta name="sb-url"  content="<?= htmlspecialchars(defined('SUPABASE_URL') ? SUPABASE_URL : '') ?>">
   <meta name="sb-anon" content="<?= htmlspecialchars(defined('SUPABASE_ANON_KEY') ? SUPABASE_ANON_KEY : '') ?>">
   <style>
@@ -102,7 +100,7 @@ $nav = [
       position: fixed; inset: 0;
       background: rgba(0,0,0,.45);
       backdrop-filter: blur(2px);
-      z-index: 1049;   /* below sidebar (1050) on mobile */
+      z-index: 1049;
     }
   </style>
 </head>
@@ -110,7 +108,6 @@ $nav = [
 <div id="sidebar-overlay" class="sidebar-overlay hidden" onclick="document.getElementById('sidebar').classList.remove('mobile-open');this.classList.add('hidden')"></div>
 
 <div id="app">
-  <!-- ── Sidebar ── -->
   <nav class="sidebar" id="sidebar">
     <a class="sidebar-brand" href="/<?= $homePage ?>">
       <img src="/logo1.png" alt="Logo" style="width:32px;height:32px;object-fit:cover;border-radius:50%;flex-shrink:0;">
@@ -147,9 +144,7 @@ $nav = [
     </div>
   </nav>
 
-  <!-- ── Main ── -->
   <div class="main-content">
-    <!-- Topbar -->
     <div class="topbar">
       <button class="btn-icon" id="sidebar-toggle" aria-label="Toggle sidebar">
         <i class="bi bi-list" style="font-size:18px"></i>
@@ -164,5 +159,4 @@ $nav = [
         </button>
       </div>
     </div>
-    <!-- Page content starts here -->
     <div class="page-body">
