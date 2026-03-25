@@ -50,11 +50,13 @@ function isAllowedCategory(categoryName) {
 }
 
 function getScopedCategories(categories) {
+  const allowedCategoryNames = getAllowedCategoryNames();
   if (!allowedCategoryNames.length) return categories;
   return categories.filter(c => isAllowedCategory(c.name));
 }
 
 function getScopedProducts(products) {
+  const allowedCategoryNames = getAllowedCategoryNames();
   if (!allowedCategoryNames.length) return products;
   return products.filter(p => isAllowedCategory(p.category?.name));
 }
